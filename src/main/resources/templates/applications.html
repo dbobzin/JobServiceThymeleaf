@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Applications</title>
+</head>
+<body>
+<h2>Job Applications</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Applicant Email</th>
+        <th>Job Description</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterate over the list of job applications and display the information -->
+    <tr th:each="app : ${jobApplications}">
+        <td th:text="${app.applicant.email}"></td>
+        <td th:text="${app.job.description}"></td>
+        <td th:text="${app.status}"></td>
+    </tr>
+
+<h1>Return back to the Admin Page</h1>
+    <a th:href="@{/admin-page}">ADMIN</a>
+    </tbody>
+</table>
+</body>
+</html>

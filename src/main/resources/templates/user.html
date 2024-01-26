@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e2433;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #45b6fe;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0e2433;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #45b6fe;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #45b6fe;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #45b6fe;
+            color: white;
+        }
+
+        a {
+            color: #45b6fe;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        /* Add more styles and components for your dashboard here */
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>USER Dashboard</h1>
+</div>
+<div class="container">
+    <h2>Welcome, [[${user.fullname}]]</h2>
+
+    <span sec:authorize="isAuthenticated">
+        <a th:href="@{/logout}">
+            Logout
+        </a>
+    </span>
+
+    <!-- Display Flash Message -->
+    <div class="message" th:if="${message != null}">
+        [[${message}]]
+    </div>
+
+    <h2>Job Management</h2>
+
+    <!-- Display Jobs -->
+    <h3>Jobs List</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Pay Rate</th>
+            <th>Job Type</th>
+            <th>Location</th>
+            <th>Benefits</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="job : ${userJobs}">
+            <td th:text="${job.id}"></td>
+            <td th:text="${job.description}"></td>
+            <td th:text="${job.payRate}"></td>
+            <td th:text="${job.jobType}"></td>
+            <td th:text="${job.location}"></td>
+            <td th:text="${job.benefits} ? 'Yes' : 'No'"></td>
+            <td><a th:href="@{/api/jobs/edit/{id}(id=${job.id})}">Edit</a></td>
+            <td><a th:href="@{/api/jobs/delete/{id}(id=${job.id})}">Delete</a></td>
+            <td>
+                <form th:action="@{/api/applications/apply/{id}(id=${job.id})}" method="post">
+                    <button type="submit">Apply</button>
+                </form>
+
+
+                <!--                <form th:action="@{'/api/applications/apply/' + ${job.id}}" method="post">-->
+<!--                    <button type="submit">Apply</button>-->
+<!--                </form>-->
+<!--            </td>-->
+        </tr>
+    </table>
+
+
+    <!-- Create Job Form -->
+    <h3>Create Job</h3>
+    <form action="/api/jobs/create" method="post">
+        <label>Description: <input type="text" name="description" required/></label><br>
+        <label>Pay Rate: <input type="number" step="0.01" name="payRate" required/></label><br>
+        <label>Job Type: <input type="text" name="jobType" required/></label><br>
+        <label>Location: <input type="text" name="location" required/></label><br>
+        <label>Benefits: <input type="checkbox" name="benefits"/></label><br>
+        <button type="submit">Create Job</button>
+    </form>
+
+</div>
+</body>
+</html>

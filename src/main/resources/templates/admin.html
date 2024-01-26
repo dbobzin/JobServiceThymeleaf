@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e2433;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #45b6fe;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0e2433;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #45b6fe;
+        }
+
+        /* Add more styles and components for your dashboard here */
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>ADMIN Dashboard</h1>
+</div>
+<div class="container">
+    <h2>Welcome, [[${user.getFullname()}]]</h2>
+
+    <span sec:authorize="isAuthenticated">
+        <a th:href="@{/logout}">
+         Logout
+
+        </a>
+
+        </span>
+
+</div>
+
+<h2>Create User</h2>
+<form method="post" action="/admin/create-user">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="fullname">Full Name:</label>
+    <input type="text" id="fullname" name="fullname" required>
+
+    <label for="role">Role:</label>
+    <select id="role" name="role">
+        <option value="ADMIN">Admin</option>
+        <option value="USER">User</option>
+    </select>
+
+    <button type="submit">Create User</button>
+</form>
+
+<h2>User List</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Fullname</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterate over users and display them -->
+    <tr th:each="user : ${userList}">
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.fullname}"></td>
+        <td th:text="${user.role}"></td>
+        <td>
+            <a href="#" onclick="showEditForm('${user.id}')">Edit</a>
+            <a th:href="@{'/admin/delete-user/' + ${user.id}}" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+    <!-- Add a hidden form for editing user -->
+    <div id="editForm${user.id}" style="display: none;">
+        <h2>Edit User</h2>
+        <form method="post" id="editUserForm" th:action="@{'/admin/edit/' + ${user.id}}">
+            <!-- You can pre-fill the form fields with existing user data -->
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" name="email" th:value="${user.email}" required>
+
+            <label for="editPassword">Password:</label>
+            <input type="password" id="editPassword" name="password" th:value="${user.password}" required>
+
+            <label for="editFullname">Full Name:</label>
+            <input type="text" id="editFullname" name="fullname" th:value="${user.fullname}" required>
+
+            <label for="editRole">Role:</label>
+            <select id="editRole" name="role" th:value="${user.role}">
+                <option value="ADMIN">Admin</option>
+                <option value="USER">User</option>
+            </select>
+
+            <button type="submit">Update User</button>
+        </form>
+    </div>
+<h3>Jobs List</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Description</th>
+        <th>Pay Rate</th>
+        <th>Job Type</th>
+        <th>Location</th>
+        <th>Benefits</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="job : ${userJobs}">
+        <td th:text="${job.id}"></td>
+        <td th:text="${job.description}"></td>
+        <td th:text="${job.payRate}"></td>
+        <td th:text="${job.jobType}"></td>
+        <td th:text="${job.location}"></td>
+        <td th:text="${job.benefits} ? 'Yes' : 'No'"></td>
+        <td><a href="#" onclick="showEditJobForm('${job.id}')">Edit</a></td>
+        <td><a th:href="@{/api/jobs/delete/{id}(id=${job.id})}">Delete</a></td>
+    </tr>
+</table>
+
+    <!-- Add a hidden form for editing jobs -->
+    <div th:each="job : ${userJobs}">
+        <div id="editJobForm${job.id}" style="display: none;">
+            <h2>Edit Job</h2>
+            <form method="post" th:action="@{'/api/jobs/update/' + ${job.id}}">
+                <!-- You can pre-fill the form fields with existing job data -->
+                <label for="editJobDescription">Description:</label>
+                <input type="text" id="editJobDescription" name="description" th:value="${job.description}" required>
+
+                <label for="editPayRate">Pay Rate:</label>
+                <input type="text" id="editPayRate" name="payRate" th:value="${job.payRate}" required>
+
+                <label for="editJobType">Job Type:</label>
+                <select id="editJobType" name="jobType">
+                    <option value="FULL_TIME" th:selected="${job.jobType == 'FULL_TIME'}">Full Time</option>
+                    <option value="PART_TIME" th:selected="${job.jobType == 'PART_TIME'}">Part Time</option>
+                    <!-- Add other job types as needed -->
+                </select>
+
+                <label for="editLocation">Location:</label>
+                <input type="text" id="editLocation" name="location" th:value="${job.location}" required>
+
+                <label for="editBenefits">Benefits:</label>
+                <input type="checkbox" id="editBenefits" name="benefits" th:checked="${job.benefits}">
+
+                <button type="submit">Update Job</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+    <h1>Go to application section</h1>
+<a th:href="@{/admin/applications}">Go to Applications</a>
+<h1>Today!</h1>
+<!--scripts-->
+<script>
+    function showEditForm(userId) {
+        // Hide all other edit forms
+        var allForms = document.querySelectorAll('[id^="editForm"]');
+        allForms.forEach(function(form) {
+            form.style.display = 'none';
+        });
+
+        // Show the specific edit form
+        var editForm = document.getElementById('editForm' + userId);
+        editForm.style.display = 'block';
+    }
+
+    <!-- scripts -->
+        function showEditJobForm(jobId) {
+            // Hide all other edit job forms
+            var allJobForms = document.querySelectorAll('[id^="editJobForm"]');
+            allJobForms.forEach(function(form) {
+                form.style.display = 'none';
+            });
+
+            // Show the specific edit job form
+            var editJobForm = document.getElementById('editJobForm' + jobId);
+            editJobForm.style.display = 'block';
+        }
+    </script>
+
+
+</body>
+</html>
