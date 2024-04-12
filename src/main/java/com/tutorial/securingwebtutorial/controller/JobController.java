@@ -63,9 +63,30 @@ public class JobController {
 //        jobService.deleteJob(id);
 //    }
 
+    //v1
+//    @GetMapping("/delete/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public void deleteJob(@PathVariable Long id, Authentication authentication, HttpServletResponse response) throws IOException {
+//        jobService.deleteJob(id);
+//
+//        // Check the role of the authenticated user
+//        if (isAdmin(authentication)) {
+//            // Admins are redirected to the admin page
+//            response.sendRedirect("/admin-page");
+//        } else {
+//            // Users are redirected to the user page
+//            response.sendRedirect("/user-page");
+//        }
+//    }
+
+    //v2
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteJob(@PathVariable Long id, Authentication authentication, HttpServletResponse response) throws IOException {
+        // Delete job applications associated with the job listing
+        jobService.deleteJobApplicationsByJobId(id);
+
+        // Delete the job listing
         jobService.deleteJob(id);
 
         // Check the role of the authenticated user

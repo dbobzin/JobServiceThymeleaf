@@ -10,7 +10,7 @@ public interface UserService {
     User save (UserDto userDto);
     void deleteUser(Long id);
     List<User> getAllUsers();
-
+    User getUserByUsername(String username);
     void initiatePasswordReset(String email);
     boolean isPasswordResetTokenValid(String token);
     void resetPassword(String token, String newPassword);

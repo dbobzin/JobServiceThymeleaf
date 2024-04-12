@@ -9,5 +9,4 @@ class SecuringWebTutorialApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

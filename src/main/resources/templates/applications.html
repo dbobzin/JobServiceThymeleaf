@@ -1,31 +1,72 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Job Applications</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e2433;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #45b6fe;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0e2433;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #45b6fe;
+        }
+
+        /* Add more styles and components for your dashboard here */
+    </style>
 </head>
 <body>
-<h2>Job Applications</h2>
-
+<div class="header">
+    <h1>Job Manager Dashboard</h1>
+</div>
+<div th:if="${param.success}">
+    <p class="success" th:text="${flash.success}"></p>
+</div>
+<div th:if="${param.error}">
+    <p class="error" th:text="${flash.error}"></p>
+</div>
 <table border="1">
     <thead>
-    <tr>
-        <th>Applicant Email</th>
-        <th>Job Description</th>
-        <th>Status</th>
-    </tr>
-    </thead>
     <tbody>
     <!-- Iterate over the list of job applications and display the information -->
     <tr th:each="app : ${jobApplications}">
         <td th:text="${app.applicant.email}"></td>
         <td th:text="${app.job.description}"></td>
         <td th:text="${app.status}"></td>
+        <td>
+            <a th:href="@{'/admin/approve/' + ${app.id}}">Approve</a>
+            <a th:href="@{'/admin/deny/' + ${app.id}}">Deny</a>
+        </td>
     </tr>
+    </tbody>
+</table>
 
 <h1>Return back to the Admin Page</h1>
     <a th:href="@{/admin-page}">ADMIN</a>
-    </tbody>
-</table>
+
 </body>
 </html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e2433;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #45b6fe;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0e2433;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #45b6fe;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #45b6fe;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #45b6fe;
+            color: white;
+        }
+
+        a {
+            color: #45b6fe;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        /* Add more styles and components for your dashboard here */
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Application Status</h1>
+</div>
+<div class="container">
+    <h2>Welcome, [[${user.fullname}]]</h2>
+
+    <span sec:authorize="isAuthenticated">
+        <a th:href="@{/logout}">Logout</a>
+    </span>
+
+    <!-- Display Flash Message -->
+    <div id="flash-message" th:if="${message}" th:text="${message}" class="alert alert-info"></div>
+
+    <nav>
+        <ul>
+            <li><a th:href="@{/user-page}">Home</a></li>
+            <li><a th:href="@{/applicationStatus}">Application Status</a></li>
+        </ul>
+    </nav>
+
+    <!-- Approved Applications -->
+    <h3>Approved Applications</h3>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Job Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over the list of approved applications and display the information -->
+        <tr th:each="app : ${approvedApplications}">
+            <td th:text="${app.job.description}"></td>
+            <td th:text="${app.status}"></td>
+            <td>
+                <!-- Add a form to submit the delete request for the approved application -->
+                <form th:action="@{'/delete-application/' + ${app.id}}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Denied Applications -->
+    <h3>Denied Applications</h3>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Job Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over the list of denied applications and display the information -->
+        <tr th:each="app : ${deniedApplications}">
+            <td th:text="${app.job.description}"></td>
+            <td th:text="${app.status}"></td>
+            <td>
+                <!-- Add a form to submit the delete request for the denied application -->
+                <form th:action="@{'/delete-application/' + ${app.id}}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <h2>I have seen all my applications and responded</h2>
+<!-- Add a form to submit the delete request -->
+<form th:action="@{/delete-applications}" method="post">
+    <button type="submit">Delete All Applications</button>
+</form>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    setTimeout(function() {
+        var flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            flashMessage.style.display = 'none';
+        }
+    }, [[${messageDuration}]]); // Get the duration from the model attribute
+    /*]]>*/
+</script>
+</body>
+</html>

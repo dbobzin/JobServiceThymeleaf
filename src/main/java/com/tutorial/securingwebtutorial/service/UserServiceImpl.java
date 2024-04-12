@@ -57,6 +57,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByUsername(String username) {
+        // Assuming username is the same as email in your system
+        return userRepository.findByEmail(username);
+    }
+
+    @Override
     public void initiatePasswordReset(String email) {
         // Find the user by email
         User user = userRepository.findByEmail(email);

@@ -7,6 +7,7 @@ import com.tutorial.securingwebtutorial.model.User;
 import com.tutorial.securingwebtutorial.repository.JobRepository;
 import com.tutorial.securingwebtutorial.repository.applicationRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,14 @@ public class JobService {
         jobRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteJobApplicationsByJobId(Long jobId) {
+        // Delete job applications associated with the job listing
+        List<JobApplication> jobApplications = applicationRepository.findByJobId(jobId);
+        applicationRepository.deleteAll(jobApplications);
+    }
+
+
     public void applyForJob(Long jobId, User applicant) {
         // Check if the job exists
         Job job = jobRepository.findById(jobId)
@@ -68,6 +77,13 @@ public class JobService {
         return applicationRepository.findByApplicant(user);
     }
 
+    public List<JobApplication> getJobApplicationsByStatus(ApplicationStatus status) {
+        return applicationRepository.findByStatus(status);
+    }
+    public List<JobApplication> getJobApplicationsByUserAndStatus(User user, ApplicationStatus status) {
+        return applicationRepository.findByApplicantAndStatus(user, status);
+    }
+
     public List<JobApplication> getAllJobApplications() {
         // Retrieve all job applications
         return applicationRepository.findAll();
@@ -83,5 +99,26 @@ public class JobService {
         // Save a job application
         applicationRepository.save(application);
     }
+
+    public boolean hasUserAppliedForJob(Long jobId, User applicant) {
+        return jobRepository.hasUserApplied(jobId, applicant.getId());
+    }
+
+    public void deleteApprovedAndDeniedApplicationsForUser(User user) {
+        // Delete approved applications
+        List<JobApplication> approvedApplications = applicationRepository.findByApplicantAndStatus(user, ApplicationStatus.APPROVED);
+        applicationRepository.deleteAll(approvedApplications);
+
+        // Delete denied applications
+        List<JobApplication> deniedApplications = applicationRepository.findByApplicantAndStatus(user, ApplicationStatus.DENIED);
+        applicationRepository.deleteAll(deniedApplications);
+    }
+
+    public void deleteApplicationById(Long applicationId) {
+        JobApplication application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new EntityNotFoundException("Job Application not found."));
+        applicationRepository.delete(application);
+    }
 }
+
 

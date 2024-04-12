@@ -79,9 +79,14 @@
     </span>
 
     <!-- Display Flash Message -->
-    <div class="message" th:if="${message != null}">
-        [[${message}]]
-    </div>
+    <div id="flash-message" th:if="${message}" th:text="${message}" class="alert alert-info"></div>
+
+    <nav>
+        <ul>
+            <li><a th:href="@{/user-page}">Jobs List</a></li>
+            <li><a th:href="@{/applicationStatus}">Application Status</a></li>
+        </ul>
+    </nav>
 
     <h2>Job Management</h2>
 
@@ -98,27 +103,21 @@
             <th>Actions</th>
         </tr>
         <tr th:each="job : ${userJobs}">
-            <td th:text="${job.id}"></td>
-            <td th:text="${job.description}"></td>
-            <td th:text="${job.payRate}"></td>
-            <td th:text="${job.jobType}"></td>
-            <td th:text="${job.location}"></td>
-            <td th:text="${job.benefits} ? 'Yes' : 'No'"></td>
-            <td><a th:href="@{/api/jobs/edit/{id}(id=${job.id})}">Edit</a></td>
-            <td><a th:href="@{/api/jobs/delete/{id}(id=${job.id})}">Delete</a></td>
-            <td>
-                <form th:action="@{/api/applications/apply/{id}(id=${job.id})}" method="post">
-                    <button type="submit">Apply</button>
-                </form>
-
-
-                <!--                <form th:action="@{'/api/applications/apply/' + ${job.id}}" method="post">-->
-<!--                    <button type="submit">Apply</button>-->
-<!--                </form>-->
-<!--            </td>-->
+                <td th:text="${job.id}"></td>
+                <td th:text="${job.description}"></td>
+                <td th:text="${job.payRate}"></td>
+                <td th:text="${job.jobType}"></td>
+                <td th:text="${job.location}"></td>
+                <td th:text="${job.benefits} ? 'Yes' : 'No'"></td>
+                <td><a th:href="@{/api/jobs/edit/{id}(id=${job.id})}">Edit</a></td>
+                <td><a th:href="@{/api/jobs/delete/{id}(id=${job.id})}">Delete</a></td>
+                <td>
+                    <form th:action="@{'/apply/' + ${job.id}}" method="post">
+                        <button type="submit">Apply</button>
+                    </form>
+                </td>
         </tr>
     </table>
-
 
     <!-- Create Job Form -->
     <h3>Create Job</h3>
@@ -132,5 +131,25 @@
     </form>
 
 </div>
+
 </body>
 </html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    setTimeout(function() {
+        var flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            flashMessage.style.display = 'none';
+        }
+    }, [[${messageDuration}]]); // Get the duration from the model attribute
+    /*]]>*/
+</script>
+<!--left off 1/26/24-->
+
+<!--So what we have to do next is possibly make the users have access to all of the job application status then point them back to here -->
+<!--Another thing we should be aware of is the possiblity of displaying the items and then being able to clear them -->
+
+<!--After I can return the responses (the endpoints maybe even consolodate them) -->
+
+<!--Return response for applciation then give delete permission (they are like messages (private)) -->
+<!--Then separate it to a new page that only specific users can access, or hold off until vue conversion-->
